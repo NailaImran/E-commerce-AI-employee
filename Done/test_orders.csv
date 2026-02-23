@@ -1,0 +1,4 @@
+Name,Email,Financial Status,Fulfillment Status,Currency,Subtotal,Shipping,Total,Created at,Notes,Lineitem name,Lineitem quantity,Lineitem price,Shipping Name,Shipping City,Shipping Country
+#1001,jane@example.com,paid,unfulfilled,USD,45.00,5.00,50.00,2026-02-21T10:00:00Z,,Blue T-Shirt,1,45.00,Jane Doe,New York,United States
+#1002,ahmed@example.com,pending,unfulfilled,USD,120.00,10.00,130.00,2026-02-20T08:00:00Z,Please hurry,Running Shoes,2,60.00,Ahmed Ali,Karachi,Pakistan
+#1003,sara@example.com,paid,fulfilled,USD,30.00,0.00,30.00,2026-02-21T09:00:00Z,,Notebook,1,30.00,Sara Khan,London,UK

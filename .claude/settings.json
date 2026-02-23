@@ -1,0 +1,26 @@
+{
+  "mcpServers": {
+    "github": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp",
+      "headers": {
+        "Authorization": "Bearer YOUR_GITHUB_PAT_HERE"
+      }
+    },
+    "email-mcp": {
+      "command": "node",
+      "args": ["E:/E-commerce-employee/mcp-servers/email-mcp/index.js"],
+      "env": {
+        "GMAIL_TOKEN_PATH": "E:/AI_Employee_Vault/.secrets/gmail_token.json",
+        "VAULT_PATH": "E:/AI_Employee_Vault"
+      }
+    }
+  },
+  "env": {
+    "VAULT_PATH": "E:/AI_Employee_Vault",
+    "GMAIL_TOKEN_PATH": "E:/AI_Employee_Vault/.secrets/gmail_token.json",
+    "LINKEDIN_TOKEN_PATH": "E:/AI_Employee_Vault/.secrets/linkedin_token.txt",
+    "SKILLS_PATH": "E:/E-commerce-employee/.claude/skills",
+    "DRY_RUN": "false"
+  }
+}
