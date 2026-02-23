@@ -12,6 +12,8 @@ Usage:
 
 import argparse
 import base64
+import os
+import re
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -24,6 +26,30 @@ SCOPES = [
     "https://www.googleapis.com/auth/gmail.readonly",
     "https://www.googleapis.com/auth/gmail.send",
 ]
+
+# ── Customer email filter config (override via .env / environment) ─────────────
+# Gmail query: excludes promotions, updates, social, and known automated senders
+GMAIL_QUERY = os.getenv(
+    "GMAIL_CUSTOMER_QUERY",
+    "is:unread -category:promotions -category:updates -category:social "
+    "-from:noreply -from:no-reply -from:donotreply "
+    "-from:newsletters-noreply -from:mailer@ -from:notifications@",
+)
+
+# Subject keywords that strongly indicate a real customer email
+CUSTOMER_KEYWORDS = [kw.strip().lower() for kw in os.getenv(
+    "CUSTOMER_SUBJECT_KEYWORDS",
+    "order,refund,return,shipping,delivery,tracking,payment,invoice,"
+    "purchase,cancel,complaint,wrong item,damaged,missing,dispatch,confirm"
+).split(",") if kw.strip()]
+
+# Sender domain/pattern blocklist (regex fragments, case-insensitive)
+SENDER_BLOCKLIST = [p.strip() for p in os.getenv(
+    "SENDER_BLOCKLIST",
+    r"noreply|no-reply|donotreply|newsletter|notifications@|mailer@|"
+    r"linkedin\.com|beehiiv\.com|google\.com|github\.com|microsoft|"
+    r"aweber\.com|shopify\.com|nayapay|infinityfree|ieltsadvantage"
+).split("|") if p.strip()]
 
 
 class GmailWatcher(BaseWatcher):
@@ -84,14 +110,53 @@ class GmailWatcher(BaseWatcher):
         return build("gmail", "v1", credentials=creds)
 
     def check_for_updates(self) -> list:
-        """Poll Gmail for unread primary emails not yet processed."""
+        """Poll Gmail for unread customer emails not yet processed."""
         result = self.service.users().messages().list(
             userId="me",
-            q="is:unread category:primary",
+            q=GMAIL_QUERY,
             maxResults=20,
         ).execute()
         messages = result.get("messages", [])
-        return [m for m in messages if m["id"] not in self.processed_ids]
+        new = [m for m in messages if m["id"] not in self.processed_ids]
+        # Second-pass Python filter for sender/subject
+        filtered = [m for m in new if self._is_customer_email(m["id"])]
+        skipped = len(new) - len(filtered)
+        if skipped:
+            self.logger.info(f"Filtered out {skipped} non-customer email(s)")
+        return filtered
+
+    def _is_customer_email(self, message_id: str) -> bool:
+        """Return True only if the email looks like a real customer email."""
+        try:
+            msg = self.service.users().messages().get(
+                userId="me", id=message_id, format="metadata",
+                metadataHeaders=["From", "Subject"],
+            ).execute()
+            headers = {h["name"]: h["value"] for h in msg.get("payload", {}).get("headers", [])}
+            sender = headers.get("From", "").lower()
+            subject = headers.get("Subject", "").lower()
+
+            # Block known automated/newsletter senders
+            for pattern in SENDER_BLOCKLIST:
+                if re.search(pattern, sender, re.IGNORECASE):
+                    self.logger.debug(f"Blocked sender [{sender}]: matched '{pattern}'")
+                    self.processed_ids.add(message_id)  # mark so we don't re-check
+                    self._save_processed_ids()
+                    return False
+
+            # If keywords are defined, require at least one match in subject
+            if CUSTOMER_KEYWORDS:
+                if any(kw in subject for kw in CUSTOMER_KEYWORDS):
+                    return True
+                self.logger.debug(f"No customer keyword in subject: '{subject}'")
+                self.processed_ids.add(message_id)
+                self._save_processed_ids()
+                return False
+
+            return True
+        except Exception as e:
+            self.logger.warning(f"Could not pre-check email {message_id}: {e}")
+            return True  # fail open — let it through to be safe
 
     def create_action_file(self, item) -> Path:
         """Fetch full message and write EMAIL_*.md to /Needs_Action/."""
