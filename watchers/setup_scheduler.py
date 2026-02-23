@@ -17,7 +17,7 @@ import sys
 from pathlib import Path
 
 TASK_NAME = "EcommerceAIEmployee_DailySummary"
-SCRIPT_PATH = Path("E:/E-commerce-employee/watchers/daily_summary.py")
+SCRIPT_PATH = Path("E:/AI_Employee_Vault/watchers/daily_summary.py")
 VAULT_PATH = "E:/AI_Employee_Vault"
 PYTHON_EXE = sys.executable
 TRIGGER_TIME = "20:00"  # 8 PM

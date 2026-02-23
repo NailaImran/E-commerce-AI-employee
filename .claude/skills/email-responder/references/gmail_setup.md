@@ -43,7 +43,7 @@ Follow these steps once to enable Gmail API access for the watcher and email sen
 Run the Gmail watcher once — it will open a browser window:
 
 ```bash
-python E:/E-commerce-employee/watchers/gmail_watcher.py --vault E:/AI_Employee_Vault
+python E:/AI_Employee_Vault/watchers/gmail_watcher.py --vault E:/AI_Employee_Vault
 ```
 
 1. A browser window opens — sign in with your Gmail

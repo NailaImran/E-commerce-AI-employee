@@ -20,7 +20,7 @@ Reads vault state (order summaries, needs-action files) and rewrites Dashboard.m
 ## Running the Updater
 
 ```bash
-python "E:/E-commerce-employee/skills/dashboard-updater/scripts/update_dashboard.py" \
+python "E:/AI_Employee_Vault/.claude/skills/dashboard-updater/scripts/update_dashboard.py" \
   --vault "E:/AI_Employee_Vault"
 ```
 

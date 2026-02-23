@@ -62,7 +62,7 @@ Shop now: [your store link] or DM us to place an order today.
 ## Publishing via API
 
 ```bash
-python "E:/E-commerce-employee/skills/linkedin-poster/scripts/post_to_linkedin.py" \
+python "E:/AI_Employee_Vault/.claude/skills/linkedin-poster/scripts/post_to_linkedin.py" \
   --post "Your post text here" \
   --token-file "E:/AI_Employee_Vault/.secrets/linkedin_token.txt"
 ```

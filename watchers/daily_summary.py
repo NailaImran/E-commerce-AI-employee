@@ -151,7 +151,7 @@ def main():
         # Also update Dashboard
         try:
             import subprocess, sys
-            updater = Path("E:/E-commerce-employee/skills/dashboard-updater/scripts/update_dashboard.py")
+            updater = Path("E:/AI_Employee_Vault/.claude/skills/dashboard-updater/scripts/update_dashboard.py")
             subprocess.run([sys.executable, str(updater), "--vault", str(vault)], check=True)
         except Exception as e:
             print(f"[WARN] Dashboard update failed: {e}")

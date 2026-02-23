@@ -32,7 +32,7 @@ except ImportError:
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("ApprovalWatcher")
 
-SKILLS_ROOT = Path("E:/E-commerce-employee/skills")
+SKILLS_ROOT = Path("E:/AI_Employee_Vault/.claude/skills")
 
 
 class ApprovalHandler(FileSystemEventHandler):

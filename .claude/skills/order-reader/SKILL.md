@@ -21,7 +21,7 @@ Parses Shopify order CSV exports, classifies each order by priority rules from C
 ## Running the Parser
 
 ```bash
-python "E:/E-commerce-employee/skills/order-reader/scripts/parse_orders.py" \
+python "E:/AI_Employee_Vault/.claude/skills/order-reader/scripts/parse_orders.py" \
   --input "E:/AI_Employee_Vault/Orders/<filename>.csv" \
   --vault "E:/AI_Employee_Vault"
 ```
