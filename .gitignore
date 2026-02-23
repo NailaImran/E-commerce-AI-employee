@@ -60,3 +60,4 @@ desktop.ini
 # ── Claude Code ────────────────────────────────────────────────────────────────
 .claude/cache/
 .claude/history*
+.claude/settings.json
