@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 """
-Approval Watcher — E-commerce AI Employee (Silver Tier)
+Approval Watcher — E-commerce AI Employee (Silver/Gold Tier)
 
 Monitors /Approved/ folder. When a file appears:
   - EMAIL_REPLY_*.md  → calls send_approved_email.py
   - LINKEDIN_*.md     → calls post_to_linkedin.py
+  - TWITTER_*.md      → calls post_to_twitter.py
+  - FACEBOOK_*.md     → calls post_to_facebook.py
+  - INSTAGRAM_*.md    → calls post_to_instagram.py
   - Other             → logs and moves to /Done/
 
 Usage:
@@ -55,6 +58,12 @@ class ApprovalHandler(FileSystemEventHandler):
             self._handle_email(filepath)
         elif name.startswith("LINKEDIN_"):
             self._handle_linkedin(filepath)
+        elif name.startswith("TWITTER_"):
+            self._handle_twitter(filepath)
+        elif name.startswith("FACEBOOK_"):
+            self._handle_facebook(filepath)
+        elif name.startswith("INSTAGRAM_"):
+            self._handle_instagram(filepath)
         else:
             logger.info(f"Unknown approval type: {name} — moving to /Done/")
             self._move_to_done(filepath)
@@ -77,6 +86,39 @@ class ApprovalHandler(FileSystemEventHandler):
         if self.dry_run:
             cmd.append("--dry-run")
         self._run(cmd, f"LinkedIn post for {filepath.name}")
+
+    def _handle_twitter(self, filepath: Path):
+        script = SKILLS_ROOT / "twitter-poster" / "scripts" / "post_to_twitter.py"
+        cmd = [
+            sys.executable, str(script),
+            "--file", str(filepath),
+            "--vault", str(self.vault),
+        ]
+        if self.dry_run:
+            cmd.append("--dry-run")
+        self._run(cmd, f"Twitter post for {filepath.name}")
+
+    def _handle_facebook(self, filepath: Path):
+        script = SKILLS_ROOT / "meta-poster" / "scripts" / "post_to_facebook.py"
+        cmd = [
+            sys.executable, str(script),
+            "--file", str(filepath),
+            "--vault", str(self.vault),
+        ]
+        if self.dry_run:
+            cmd.append("--dry-run")
+        self._run(cmd, f"Facebook post for {filepath.name}")
+
+    def _handle_instagram(self, filepath: Path):
+        script = SKILLS_ROOT / "meta-poster" / "scripts" / "post_to_instagram.py"
+        cmd = [
+            sys.executable, str(script),
+            "--file", str(filepath),
+            "--vault", str(self.vault),
+        ]
+        if self.dry_run:
+            cmd.append("--dry-run")
+        self._run(cmd, f"Instagram post for {filepath.name}")
 
     def _run(self, cmd: list, description: str):
         logger.info(f"Running: {description}")

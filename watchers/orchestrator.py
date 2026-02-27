@@ -42,6 +42,7 @@ SCRIPTS = {
 }
 
 DAILY_BRIEFING_HOUR = 20    # 8 PM
+REFLECTION_HOUR = 21         # 9 PM (1h after daily briefing)
 WEEKLY_CEO_DAY = 6           # Sunday (0=Mon … 6=Sun)
 
 LOGS_DIR = VAULT_PATH / "Logs"
@@ -211,7 +212,9 @@ class Scheduler:
         self.dry_run = dry_run
         self._last_daily: str = ""
         self._last_ceo: str = ""
+        self._last_reflection: str = ""
         self.daily_script = WATCHERS_DIR / "daily_summary.py"
+        self.reflection_script = WATCHERS_DIR / "ralph_wiggum_reflection.py"
 
     def _today(self) -> str:
         return datetime.now().strftime("%Y-%m-%d")
@@ -229,6 +232,13 @@ class Scheduler:
             now.weekday() == WEEKLY_CEO_DAY
             and now.hour == DAILY_BRIEFING_HOUR
             and self._last_ceo != self._today()
+        )
+
+    def _should_run_reflection(self) -> bool:
+        now = datetime.now()
+        return (
+            now.hour == REFLECTION_HOUR
+            and self._last_reflection != self._today()
         )
 
     def run_daily_briefing(self):
@@ -252,6 +262,28 @@ class Scheduler:
         except Exception as e:
             logger.error(f"Daily briefing error: {e}")
         self._last_daily = self._today()
+
+    def run_reflection(self):
+        logger.info("Triggering Ralph Wiggum self-reflection...")
+        if self.dry_run:
+            logger.info("[DRY RUN] Would run ralph_wiggum_reflection.py")
+            self._last_reflection = self._today()
+            return
+        try:
+            result = subprocess.run(
+                [sys.executable, str(self.reflection_script)],
+                capture_output=True, text=True, timeout=120,
+                env={**os.environ, "VAULT_PATH": str(VAULT_PATH)},
+            )
+            if result.returncode == 0:
+                logger.info("Reflection report completed.")
+                write_audit_log("reflection_scheduled", "ralph_wiggum_reflection.py", "success")
+            else:
+                logger.error(f"Reflection failed: {result.stderr}")
+                write_audit_log("reflection_scheduled", "ralph_wiggum_reflection.py", "error", stderr=result.stderr)
+        except Exception as e:
+            logger.error(f"Reflection error: {e}")
+        self._last_reflection = self._today()
 
     def run_ceo_briefing(self):
         """Generate Monday Morning CEO Briefing (Section 4)."""
@@ -321,6 +353,8 @@ Weekly audit of store operations, communications, and pending items.
             self.run_ceo_briefing()
         elif self._should_run_daily():
             self.run_daily_briefing()
+        if self._should_run_reflection():
+            self.run_reflection()
 
 
 # ── Main ──────────────────────────────────────────────────────────────────────

@@ -61,3 +61,10 @@ desktop.ini
 .claude/cache/
 .claude/history*
 .claude/settings.json
+
+# Local-only Claude settings
+.claude/settings.local.json
+
+# Scratchpad login helpers
+watchers/twitter_login_code.json
+watchers/twitter_via_playwright.py

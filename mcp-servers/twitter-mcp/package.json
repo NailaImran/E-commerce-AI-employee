@@ -1,0 +1,14 @@
+{
+  "name": "twitter-mcp",
+  "version": "1.0.0",
+  "description": "Twitter/X MCP server for E-commerce AI Employee — posts tweets, reads timeline, searches tweets",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "twitter-api-v2": "^1.17.0"
+  }
+}
