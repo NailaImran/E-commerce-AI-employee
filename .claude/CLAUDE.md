@@ -22,6 +22,9 @@ E:/AI_Employee_Vault
   - Use post_tweet ONLY after TWITTER_*.md approval file exists in /Approved/
 - **meta-social-mcp**: post_to_facebook_page, post_to_instagram, get_page_insights
   - Use ONLY after FACEBOOK_*.md or INSTAGRAM_*.md approval file exists in /Approved/
+- **odoo-mcp**: create_sale_order, create_invoice, get_financial_summary, update_inventory, search_products, get_sale_orders
+  - Auto-sync after order-reader processes a CSV batch
+  - get_financial_summary → include in daily briefing + CEO report
 
 ## Skills Available
 - order-reader: process Shopify CSV orders
@@ -30,6 +33,7 @@ E:/AI_Employee_Vault
 - linkedin-poster: generate + publish LinkedIn posts
 - twitter-poster: generate + publish Twitter/X posts (≤280 chars)
 - plan-creator: create action plans for order batches
+- odoo-sync: sync orders to Odoo, create invoices, financial reports, inventory updates
 
 ## Workflow
 1. Check /Needs_Action/ for pending items
