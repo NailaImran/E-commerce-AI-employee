@@ -112,29 +112,53 @@ async function createSaleOrder({ customer_name, customer_email, order_ref, lines
 async function createInvoice({ sale_order_id }) {
   // Confirm the sale order first if in draft
   const [order] = await execute("sale.order", "read", [[sale_order_id]], {
-    fields: ["state", "name"],
+    fields: ["state", "name", "partner_id", "order_line"],
   });
 
   if (order.state === "draft" || order.state === "sent") {
     await execute("sale.order", "action_confirm", [[sale_order_id]]);
   }
 
-  // Create invoice from sale order
-  const invoiceContext = { active_ids: [sale_order_id], active_model: "sale.order" };
-  const invoiceWizardId = await execute("sale.advance.payment.inv", "create", [{}], {
-    context: invoiceContext,
-  });
-  await execute("sale.advance.payment.inv", "create_invoices", [[invoiceWizardId]], {
-    context: invoiceContext,
+  // Read order lines (no tax fields — Odoo 19 compatibility)
+  const lines = await execute("sale.order.line", "read", [order.order_line], {
+    fields: ["name", "product_uom_qty", "price_unit"],
   });
 
-  // Get the created invoice
-  const invoices = await execute("account.move", "search_read",
-    [[["invoice_origin", "like", order.name]]],
-    { fields: ["id", "name", "amount_total", "state", "invoice_date"], limit: 1 }
+  // Find Sales Income account and Sales journal
+  const [incomeAccount] = await execute("account.account", "search_read",
+    [[["account_type", "=", "income"]]],
+    { fields: ["id"], limit: 1 }
+  );
+  const [journal] = await execute("account.journal", "search_read",
+    [[["type", "=", "sale"]]],
+    { fields: ["id"], limit: 1 }
   );
 
-  return invoices[0] || { message: "Invoice created but could not retrieve details" };
+  const invoiceLines = lines.map(l => [0, 0, {
+    name: l.name,
+    quantity: l.product_uom_qty,
+    price_unit: l.price_unit,
+    account_id: incomeAccount.id,
+  }]);
+
+  const today = new Date().toISOString().split("T")[0];
+  const invoiceId = await execute("account.move", "create", [{
+    move_type: "out_invoice",
+    partner_id: order.partner_id[0],
+    journal_id: journal.id,
+    invoice_date: today,
+    invoice_origin: order.name,
+    invoice_line_ids: invoiceLines,
+  }]);
+
+  // Post (confirm) the invoice
+  await execute("account.move", "action_post", [[invoiceId]]);
+
+  const [invoice] = await execute("account.move", "read", [[invoiceId]], {
+    fields: ["id", "name", "amount_total", "state", "invoice_date", "payment_state"],
+  });
+
+  return invoice;
 }
 
 async function getFinancialSummary({ period = "this_month" }) {
