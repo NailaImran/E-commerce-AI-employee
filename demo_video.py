@@ -91,6 +91,18 @@ def safe_goto(page, url, wait_until="domcontentloaded", timeout=20000):
         page.goto(url, wait_until=wait_until, timeout=timeout)
     except Exception as e:
         print(f"  [warn] Navigation: {str(e)[:120]}")
+    # Let any post-navigation redirects settle
+    try:
+        page.wait_for_load_state("domcontentloaded", timeout=5000)
+    except Exception:
+        pass
+
+
+def safe_banner(page, step_num, title, subtitle=""):
+    try:
+        banner(page, step_num, title, subtitle)
+    except Exception as e:
+        print(f"  [warn] Banner skipped: {str(e)[:80]}")
 
 
 # ── Log HTML builder ──────────────────────────────────────────────────────────
@@ -210,8 +222,7 @@ def run_demo():
         safe_goto(page, "https://github.com/NailaImran/E-commerce-AI-employee",
                   wait_until="domcontentloaded", timeout=30000)
         wait(PAUSE_SHORT)
-        wait(PAUSE_SHORT)
-        banner(page, "→", "GitHub Repository",
+        safe_banner(page, "→", "GitHub Repository",
                "Full source: MCP servers, watchers, skills, Playwright automation")
         wait(PAUSE_LONG)
         # scroll to show README
@@ -222,7 +233,7 @@ def run_demo():
         print("[+] Logs: audit trail")
         safe_goto(page, log_html_path.as_uri())
         wait(PAUSE_SHORT)
-        banner(page, "→", "Audit Logs — /Logs/YYYY-MM-DD.json",
+        safe_banner(page, "→", "Audit Logs — /Logs/YYYY-MM-DD.json",
                "Every action logged: watchers, approvals, social posts, Odoo sync")
         wait(PAUSE_LONG)
 
@@ -231,7 +242,7 @@ def run_demo():
         safe_goto(page, "https://mystore6.odoo.com/odoo/sales",
                   wait_until="domcontentloaded", timeout=30000)
         wait(PAUSE_MEDIUM)
-        banner(page, "→", "Odoo ERP — Sales Orders",
+        safe_banner(page, "→", "Odoo ERP — Sales Orders",
                "S00002: Sara Khan — Embroidered Lawn Suit + Chiffon Dupatta (PKR 11,407)")
         wait(PAUSE_LONG)
 
@@ -240,7 +251,7 @@ def run_demo():
         safe_goto(page, "https://mystore6.odoo.com/odoo/accounting/customer-invoices",
                   wait_until="domcontentloaded", timeout=30000)
         wait(PAUSE_MEDIUM)
-        banner(page, "→", "Odoo ERP — Invoice INV/2026/00001",
+        safe_banner(page, "→", "Odoo ERP — Invoice INV/2026/00001",
                "Auto-created via XML-RPC — state: posted — payment: not_paid")
         wait(PAUSE_LONG)
 
@@ -249,7 +260,7 @@ def run_demo():
         safe_goto(page, "https://www.linkedin.com/in/naila-yaqoob-00ab72342/recent-activity/all/",
                   wait_until="domcontentloaded", timeout=30000)
         wait(PAUSE_MEDIUM)
-        banner(page, "→", "LinkedIn — Hackathon 0 Showcase Post",
+        safe_banner(page, "→", "LinkedIn — Hackathon 0 Showcase Post",
                "Posted via LinkedIn API — HITL approved — urn:li:share:7433568447827050496")
         wait(PAUSE_LONG)
 
@@ -258,7 +269,7 @@ def run_demo():
         safe_goto(page, "https://www.instagram.com/nailayaqoob86/",
                   wait_until="domcontentloaded", timeout=30000)
         wait(PAUSE_MEDIUM)
-        banner(page, "→", "Instagram — Fashion Product Post",
+        safe_banner(page, "→", "Instagram — Fashion Product Post",
                "Published via Meta Graph API — Post ID: 17973975764841305")
         wait(PAUSE_LONG)
 
