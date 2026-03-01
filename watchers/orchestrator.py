@@ -104,8 +104,12 @@ class WatcherManager:
         logger.info(f"Starting {name}...")
         try:
             env = {**os.environ, "VAULT_PATH": str(VAULT_PATH)}
+            # orders_watcher gets --auto-parse so CSV drops are processed immediately
+            cmd = [sys.executable, script]
+            if name == "orders_watcher":
+                cmd.append("--auto-parse")
             proc = subprocess.Popen(
-                [sys.executable, script],
+                cmd,
                 env=env,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,

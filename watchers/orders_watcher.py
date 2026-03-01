@@ -56,7 +56,7 @@ class OrdersDropHandler(FileSystemEventHandler):
         self.needs_action = vault_path / "Needs_Action"
         self.needs_action.mkdir(exist_ok=True)
         self.auto_parse = auto_parse
-        self.parse_script = Path(__file__).parent.parent / "skills" / "order-reader" / "scripts" / "parse_orders.py"
+        self.parse_script = Path(__file__).parent.parent / ".claude" / "skills" / "order-reader" / "scripts" / "parse_orders.py"
 
     def on_created(self, event):
         if event.is_directory:
