@@ -1,0 +1,121 @@
+<!DOCTYPE html><html>
+<head><meta charset="UTF-8">
+<style>
+  body{background:#000;color:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+       padding:60px;margin:0}
+  body::before{content:'';position:fixed;inset:0;
+    background:radial-gradient(ellipse 80% 40% at 50% -5%,rgba(59,130,246,.1),transparent);
+    pointer-events:none}
+  .title{font-size:13px;text-transform:uppercase;letter-spacing:2px;
+          color:#60a5fa;margin-bottom:12px}
+  h2{font-size:36px;font-weight:700;margin-bottom:8px}
+  .sub{color:rgba(255,255,255,.4);font-size:15px;margin-bottom:36px}
+  table{width:100%;border-collapse:collapse;
+         background:rgba(255,255,255,.03);border-radius:12px;overflow:hidden;
+         border:1px solid rgba(255,255,255,.07)}
+  thead tr{background:rgba(255,255,255,.05)}
+  thead th{padding:12px 16px;text-align:left;font-size:11px;text-transform:uppercase;
+             letter-spacing:1px;color:rgba(255,255,255,.4);font-weight:600}
+  tbody tr:hover{background:rgba(255,255,255,.03)}
+  tbody tr{border-top:1px solid rgba(255,255,255,.04)}
+</style>
+</head>
+<body>
+  <div class="title">📋 Audit Trail</div>
+  <h2>Live Action Logs</h2>
+  <p class="sub">Every action logged to /Logs/YYYY-MM-DD.json — tamper-proof audit trail</p>
+  <table>
+    <thead><tr>
+      <th>Timestamp</th><th>Actor</th><th>Action</th><th>Target</th><th>Result</th>
+    </tr></thead>
+    <tbody>
+        <tr>
+          <td style="color:#64748b;font-size:13px;padding:10px 16px;white-space:nowrap">2026-03-01 10:52:00</td>
+          <td style="color:#60a5fa;padding:10px 16px;font-weight:600">Orchestrator</td>
+          <td style="color:#e2e8f0;padding:10px 16px">watcher_started</td>
+          <td style="padding:10px 16px;overflow:hidden;max-width:280px;
+                     white-space:nowrap;text-overflow:ellipsis;color:#94a3b8">gmail_watcher</td>
+          <td style="padding:10px 16px"><span style="color:#4ade80;font-weight:600">success</span></td>
+        </tr>
+        <tr>
+          <td style="color:#64748b;font-size:13px;padding:10px 16px;white-space:nowrap">2026-03-01 10:52:00</td>
+          <td style="color:#60a5fa;padding:10px 16px;font-weight:600">Orchestrator</td>
+          <td style="color:#e2e8f0;padding:10px 16px">watcher_started</td>
+          <td style="padding:10px 16px;overflow:hidden;max-width:280px;
+                     white-space:nowrap;text-overflow:ellipsis;color:#94a3b8">orders_watcher</td>
+          <td style="padding:10px 16px"><span style="color:#4ade80;font-weight:600">success</span></td>
+        </tr>
+        <tr>
+          <td style="color:#64748b;font-size:13px;padding:10px 16px;white-space:nowrap">2026-03-01 10:52:00</td>
+          <td style="color:#60a5fa;padding:10px 16px;font-weight:600">Orchestrator</td>
+          <td style="color:#e2e8f0;padding:10px 16px">watcher_started</td>
+          <td style="padding:10px 16px;overflow:hidden;max-width:280px;
+                     white-space:nowrap;text-overflow:ellipsis;color:#94a3b8">approval_watcher</td>
+          <td style="padding:10px 16px"><span style="color:#4ade80;font-weight:600">success</span></td>
+        </tr>
+        <tr>
+          <td style="color:#64748b;font-size:13px;padding:10px 16px;white-space:nowrap">2026-03-01 10:52:00</td>
+          <td style="color:#60a5fa;padding:10px 16px;font-weight:600">Orchestrator</td>
+          <td style="color:#e2e8f0;padding:10px 16px">orchestrator_started</td>
+          <td style="padding:10px 16px;overflow:hidden;max-width:280px;
+                     white-space:nowrap;text-overflow:ellipsis;color:#94a3b8">orchestrator.py</td>
+          <td style="padding:10px 16px"><span style="color:#4ade80;font-weight:600">success</span></td>
+        </tr>
+        <tr>
+          <td style="color:#64748b;font-size:13px;padding:10px 16px;white-space:nowrap">2026-03-01 11:45:00</td>
+          <td style="color:#60a5fa;padding:10px 16px;font-weight:600">Orchestrator</td>
+          <td style="color:#e2e8f0;padding:10px 16px">file_detected</td>
+          <td style="padding:10px 16px;overflow:hidden;max-width:280px;
+                     white-space:nowrap;text-overflow:ellipsis;color:#94a3b8">NEW_ORDERS_products_export_1_2026-03-01_11-44-06.md</td>
+          <td style="padding:10px 16px"><span style="color:#94a3b8;font-weight:600">routed</span></td>
+        </tr>
+        <tr>
+          <td style="color:#64748b;font-size:13px;padding:10px 16px;white-space:nowrap">2026-03-01 11:48:40</td>
+          <td style="color:#60a5fa;padding:10px 16px;font-weight:600">Orchestrator</td>
+          <td style="color:#e2e8f0;padding:10px 16px">orchestrator_started</td>
+          <td style="padding:10px 16px;overflow:hidden;max-width:280px;
+                     white-space:nowrap;text-overflow:ellipsis;color:#94a3b8">orchestrator.py</td>
+          <td style="padding:10px 16px"><span style="color:#4ade80;font-weight:600">success</span></td>
+        </tr>
+        <tr>
+          <td style="color:#64748b;font-size:13px;padding:10px 16px;white-space:nowrap">2026-03-01 11:58:56</td>
+          <td style="color:#60a5fa;padding:10px 16px;font-weight:600">Orchestrator</td>
+          <td style="color:#e2e8f0;padding:10px 16px">watcher_started</td>
+          <td style="padding:10px 16px;overflow:hidden;max-width:280px;
+                     white-space:nowrap;text-overflow:ellipsis;color:#94a3b8">gmail_watcher</td>
+          <td style="padding:10px 16px"><span style="color:#4ade80;font-weight:600">success</span></td>
+        </tr>
+        <tr>
+          <td style="color:#64748b;font-size:13px;padding:10px 16px;white-space:nowrap">2026-03-01 11:58:56</td>
+          <td style="color:#60a5fa;padding:10px 16px;font-weight:600">Orchestrator</td>
+          <td style="color:#e2e8f0;padding:10px 16px">watcher_started</td>
+          <td style="padding:10px 16px;overflow:hidden;max-width:280px;
+                     white-space:nowrap;text-overflow:ellipsis;color:#94a3b8">orders_watcher</td>
+          <td style="padding:10px 16px"><span style="color:#4ade80;font-weight:600">success</span></td>
+        </tr>
+        <tr>
+          <td style="color:#64748b;font-size:13px;padding:10px 16px;white-space:nowrap">2026-03-01 11:58:56</td>
+          <td style="color:#60a5fa;padding:10px 16px;font-weight:600">Orchestrator</td>
+          <td style="color:#e2e8f0;padding:10px 16px">watcher_started</td>
+          <td style="padding:10px 16px;overflow:hidden;max-width:280px;
+                     white-space:nowrap;text-overflow:ellipsis;color:#94a3b8">approval_watcher</td>
+          <td style="padding:10px 16px"><span style="color:#4ade80;font-weight:600">success</span></td>
+        </tr>
+        <tr>
+          <td style="color:#64748b;font-size:13px;padding:10px 16px;white-space:nowrap">2026-03-01 11:58:56</td>
+          <td style="color:#60a5fa;padding:10px 16px;font-weight:600">Orchestrator</td>
+          <td style="color:#e2e8f0;padding:10px 16px">orchestrator_started</td>
+          <td style="padding:10px 16px;overflow:hidden;max-width:280px;
+                     white-space:nowrap;text-overflow:ellipsis;color:#94a3b8">orchestrator.py</td>
+          <td style="padding:10px 16px"><span style="color:#4ade80;font-weight:600">success</span></td>
+        </tr>
+        <tr>
+          <td style="color:#64748b;font-size:13px;padding:10px 16px;white-space:nowrap">2026-02-28 22:43:31</td>
+          <td style="color:#60a5fa;padding:10px 16px;font-weight:600">linkedin-poster</td>
+          <td style="color:#e2e8f0;padding:10px 16px">action_file_created</td>
+          <td style="padding:10px 16px;overflow:hidden;max-width:280px;
+                     white-space:nowrap;text-overflow:ellipsis;color:#94a3b8">Pending_Approval/LINKEDIN_2026-02-28_hackathon.md</td>
+          <td style="padding:10px 16px"><span style="color:#4ade80;font-weight:600">success</span></td>
+        </tr></tbody>
+  </table>
+</body></html>

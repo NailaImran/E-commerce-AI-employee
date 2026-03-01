@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Employee — Demo</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #000;
+    color: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    height: 100vh;
+    overflow: hidden;
+    cursor: none;
+  }
+
+  /* ── Slide Base ── */
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.7s ease;
+  }
+  .slide.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  /* ── Progress Bar ── */
+  #progress {
+    position: fixed;
+    bottom: 0; left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+    transition: width 0.6s ease;
+    z-index: 999;
+  }
+
+  /* ── Slide Counter ── */
+  #counter {
+    position: fixed;
+    bottom: 16px; right: 24px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.3);
+    z-index: 999;
+    letter-spacing: 1px;
+  }
+
+  /* ── Tag chip ── */
+  .tag {
+    display: inline-block;
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .tag-blue  { background: rgba(59,130,246,.15); color: #60a5fa; border: 1px solid rgba(59,130,246,.3); }
+  .tag-green { background: rgba(34,197,94,.12);  color: #4ade80; border: 1px solid rgba(34,197,94,.3); }
+  .tag-gold  { background: rgba(234,179,8,.12);  color: #facc15; border: 1px solid rgba(234,179,8,.3); }
+
+  /* ── Typography ── */
+  h1 { font-size: 72px; font-weight: 800; line-height: 1.05; letter-spacing: -2px; }
+  h2 { font-size: 48px; font-weight: 700; line-height: 1.1; letter-spacing: -1px; }
+  h3 { font-size: 28px; font-weight: 600; }
+  .sub { font-size: 20px; color: rgba(255,255,255,0.55); margin-top: 16px; line-height: 1.6; }
+  .sub-sm { font-size: 16px; color: rgba(255,255,255,0.45); }
+
+  /* ── Grid layouts ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; width: 100%; max-width: 1200px; margin-top: 48px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; width: 100%; max-width: 1200px; margin-top: 48px; }
+
+  /* ── Card ── */
+  .card {
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 16px;
+    padding: 28px 32px;
+    text-align: center;
+  }
+  .card h4 { font-size: 15px; font-weight: 600; margin-bottom: 14px; color: #e2e8f0; }
+  .card .icon { font-size: 32px; margin-bottom: 12px; display: block; }
+
+  /* ── Check list ── */
+  ul.checks { list-style: none; text-align: left; }
+  ul.checks li {
+    padding: 8px 0;
+    font-size: 17px;
+    color: rgba(255,255,255,.75);
+    display: flex; align-items: flex-start; gap: 10px;
+    border-bottom: 1px solid rgba(255,255,255,.05);
+  }
+  ul.checks li:last-child { border-bottom: none; }
+  ul.checks li span.check { color: #4ade80; font-size: 14px; margin-top: 2px; flex-shrink: 0; }
+
+  /* ── Tech badges ── */
+  .badges { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 32px; justify-content: center; }
+  .badge {
+    padding: 8px 18px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.12);
+    color: rgba(255,255,255,.8);
+  }
+
+  /* ── Architecture diagram ── */
+  .arch {
+    background: rgba(255,255,255,.03);
+    border: 1px solid rgba(255,255,255,.07);
+    border-radius: 20px;
+    padding: 40px;
+    margin-top: 40px;
+    width: 100%;
+    max-width: 1000px;
+    font-size: 15px;
+    line-height: 2;
+    color: rgba(255,255,255,.7);
+    font-family: 'SF Mono', 'Fira Code', monospace;
+  }
+  .arch .hl { color: #60a5fa; font-weight: 700; }
+  .arch .gr { color: #4ade80; }
+  .arch .yl { color: #facc15; }
+  .arch .pk { color: #f472b6; }
+
+  /* ── Gradient text ── */
+  .grad { background: linear-gradient(135deg, #60a5fa, #a78bfa, #f472b6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+  /* ── Stat ── */
+  .stat-row { display: flex; gap: 48px; margin-top: 40px; }
+  .stat { text-align: center; }
+  .stat .num { font-size: 52px; font-weight: 800; }
+  .stat .lbl { font-size: 13px; color: rgba(255,255,255,.4); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+
+  /* ── Background noise ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(59,130,246,.12), transparent);
+    pointer-events: none;
+  }
+
+  /* ── Glow dot ── */
+  .glow-dot {
+    width: 6px; height: 6px;
+    background: #4ade80;
+    border-radius: 50%;
+    box-shadow: 0 0 12px #4ade80;
+    display: inline-block;
+    margin-right: 8px;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity: 1; } 50% { opacity: .3; }
+  }
+
+  /* ── HITL flow ── */
+  .flow { display: flex; align-items: center; gap: 0; margin-top: 40px; width: 100%; max-width: 1100px; }
+  .flow-step {
+    flex: 1;
+    text-align: center;
+    padding: 24px 16px;
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 12px;
+    font-size: 14px;
+  }
+  .flow-step .fi { font-size: 28px; margin-bottom: 8px; }
+  .flow-step .ft { font-weight: 600; color: #e2e8f0; margin-bottom: 4px; }
+  .flow-step .fd { color: rgba(255,255,255,.4); font-size: 12px; }
+  .flow-arrow { color: rgba(255,255,255,.2); font-size: 24px; padding: 0 8px; flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<!-- SLIDE 1 — INTRO -->
+<div class="slide active" id="s1">
+  <div class="tag tag-gold">🏆 Panaversity Hackathon 0 — Gold Tier</div>
+  <h1 class="grad">E-commerce<br>AI Employee</h1>
+  <p class="sub" style="max-width:600px;text-align:center">
+    A fully autonomous store manager that handles emails, orders,<br>
+    social media, and ERP — built by <strong>Naila Yaqoob</strong>
+  </p>
+  <div class="stat-row">
+    <div class="stat"><div class="num grad">6</div><div class="lbl">Integrations</div></div>
+    <div class="stat"><div class="num grad">24/7</div><div class="lbl">Autonomous</div></div>
+    <div class="stat"><div class="num grad">HITL</div><div class="lbl">Safe by design</div></div>
+    <div class="stat"><div class="num grad">0</div><div class="lbl">Missed tasks</div></div>
+  </div>
+</div>
+
+<!-- SLIDE 2 — WHAT IT DOES -->
+<div class="slide" id="s2">
+  <div class="tag tag-blue">Capabilities</div>
+  <h2>One employee. Every job.</h2>
+  <div class="grid-2">
+    <div class="card">
+      <div class="icon">📧</div>
+      <h4>Customer Support</h4>
+      <ul class="checks">
+        <li><span class="check">✓</span> Reads Gmail every 5 minutes</li>
+        <li><span class="check">✓</span> Classifies: order query / complaint / refund</li>
+        <li><span class="check">✓</span> Drafts professional replies</li>
+        <li><span class="check">✓</span> Waits for your approval before sending</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="icon">📦</div>
+      <h4>Order Management</h4>
+      <ul class="checks">
+        <li><span class="check">✓</span> Watches /Orders/ for Shopify CSVs</li>
+        <li><span class="check">✓</span> Flags high-priority orders &gt; PKR 10,000</li>
+        <li><span class="check">✓</span> Syncs to Odoo ERP automatically</li>
+        <li><span class="check">✓</span> Creates invoices via XML-RPC</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="icon">📱</div>
+      <h4>Social Media (HITL)</h4>
+      <ul class="checks">
+        <li><span class="check">✓</span> Generates posts for 4 platforms</li>
+        <li><span class="check">✓</span> Twitter/X via browser automation</li>
+        <li><span class="check">✓</span> Instagram + Facebook via Meta Graph API</li>
+        <li><span class="check">✓</span> LinkedIn via API — approval required</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="icon">🧠</div>
+      <h4>Intelligence Layer</h4>
+      <ul class="checks">
+        <li><span class="check">✓</span> Daily briefing every evening at 8pm</li>
+        <li><span class="check">✓</span> Weekly CEO report every Sunday</li>
+        <li><span class="check">✓</span> Ralph Wiggum self-reflection at 9pm</li>
+        <li><span class="check">✓</span> Scores itself GREEN / YELLOW / RED</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 3 — ARCHITECTURE -->
+<div class="slide" id="s3">
+  <div class="tag tag-blue">Architecture</div>
+  <h2>How it all connects</h2>
+  <div class="arch">
+    <span class="hl">Orchestrator</span> (master process — runs 24/7)<br>
+    &nbsp;&nbsp;├── <span class="gr">gmail_watcher.py</span>      → scans inbox → /Needs_Action/EMAIL_*.md<br>
+    &nbsp;&nbsp;├── <span class="gr">orders_watcher.py</span>     → detects CSV → /Inbox/ + Odoo sync<br>
+    &nbsp;&nbsp;├── <span class="gr">approval_watcher.py</span>   → routes /Approved/ → publish<br>
+    &nbsp;&nbsp;├── <span class="gr">daily_summary.py</span>      → 20:00 daily briefing<br>
+    &nbsp;&nbsp;└── <span class="gr">ralph_wiggum.py</span>       → 21:00 self-reflection<br>
+    <br>
+    <span class="hl">MCP Servers</span> (Claude tool integrations)<br>
+    &nbsp;&nbsp;├── <span class="yl">email-mcp</span>             → Gmail OAuth send/draft/read<br>
+    &nbsp;&nbsp;├── <span class="yl">twitter-mcp</span>           → Twitter API v2 + Playwright fallback<br>
+    &nbsp;&nbsp;├── <span class="yl">meta-social-mcp</span>       → Meta Graph API v21 (FB + IG)<br>
+    &nbsp;&nbsp;└── <span class="yl">odoo-mcp</span>              → Odoo XML-RPC (orders, invoices, ERP)<br>
+    <br>
+    <span class="hl">HITL Approval Flow</span><br>
+    &nbsp;&nbsp;<span class="pk">/Pending_Approval/</span> → human reviews → <span class="gr">/Approved/</span> → watcher fires → publish<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;→ <span class="pk">/Rejected/</span>  → logged &amp; archived
+  </div>
+</div>
+
+<!-- SLIDE 4 — HITL WORKFLOW -->
+<div class="slide" id="s4">
+  <div class="tag tag-blue">Human-in-the-Loop</div>
+  <h2>Safe by design</h2>
+  <p class="sub" style="max-width:640px;text-align:center">The AI never acts autonomously on communications.<br>Every message, post, and email requires your approval.</p>
+  <div class="flow">
+    <div class="flow-step">
+      <div class="fi">🤖</div>
+      <div class="ft">AI Generates</div>
+      <div class="fd">Drafts email reply,<br>social post, or report</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">
+      <div class="fi">📂</div>
+      <div class="ft">/Pending_Approval/</div>
+      <div class="fd">LINKEDIN_*.md<br>EMAIL_REPLY_*.md</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step" style="border-color:rgba(250,204,21,.3);background:rgba(250,204,21,.05)">
+      <div class="fi">👤</div>
+      <div class="ft" style="color:#facc15">You Review</div>
+      <div class="fd">Move to /Approved/<br>or /Rejected/</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step" style="border-color:rgba(74,222,128,.3);background:rgba(74,222,128,.05)">
+      <div class="fi">✅</div>
+      <div class="ft" style="color:#4ade80">AI Executes</div>
+      <div class="fd">Sends email, posts<br>to social media</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">
+      <div class="fi">📋</div>
+      <div class="ft">Logged</div>
+      <div class="fd">Every action in<br>/Logs/YYYY-MM-DD.json</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 5 — TECH STACK -->
+<div class="slide" id="s5">
+  <div class="tag tag-blue">Tech Stack</div>
+  <h2>Built to production standards</h2>
+  <div class="badges">
+    <div class="badge">🐍 Python 3</div>
+    <div class="badge">⬡ Node.js</div>
+    <div class="badge">🤖 Claude Sonnet 4.6</div>
+    <div class="badge">🔌 MCP Protocol</div>
+    <div class="badge">🎭 Playwright</div>
+    <div class="badge">📧 Gmail OAuth2</div>
+    <div class="badge">🐦 Twitter API v2</div>
+    <div class="badge">📘 Meta Graph API v21</div>
+    <div class="badge">💼 LinkedIn API v2</div>
+    <div class="badge">📊 Odoo XML-RPC</div>
+    <div class="badge">🛍️ Shopify CSV</div>
+    <div class="badge">🕐 Watchdog + Scheduler</div>
+    <div class="badge">📂 HITL File Routing</div>
+    <div class="badge">🔒 .secrets gitignore</div>
+  </div>
+  <div style="margin-top:48px;text-align:center">
+    <p class="sub-sm">github.com/NailaImran/E-commerce-AI-employee</p>
+  </div>
+</div>
+
+<!-- SLIDE 6 — GOLD TIER -->
+<div class="slide" id="s6">
+  <div class="tag tag-gold">Achievement Unlocked</div>
+  <h2 class="grad">Gold Tier Complete</h2>
+  <p class="sub" style="margin-bottom:40px;text-align:center">All 5 Gold Tier requirements delivered and live</p>
+  <div style="max-width:600px;width:100%">
+    <ul class="checks">
+      <li style="font-size:19px"><span class="check" style="font-size:18px">✅</span> Self-Reflection Loop — Ralph Wiggum scores GREEN/YELLOW/RED</li>
+      <li style="font-size:19px"><span class="check" style="font-size:18px">✅</span> Twitter/X Integration — browser automation, first tweet live</li>
+      <li style="font-size:19px"><span class="check" style="font-size:18px">✅</span> Facebook + Instagram — Meta Graph API, posts live</li>
+      <li style="font-size:19px"><span class="check" style="font-size:18px">✅</span> Odoo ERP Integration — orders, invoices, financial summary</li>
+      <li style="font-size:19px"><span class="check" style="font-size:18px">✅</span> Full HITL Approval Flow — 5 prefixes routed automatically</li>
+    </ul>
+  </div>
+  <div style="margin-top:48px;text-align:center">
+    <span class="glow-dot"></span>
+    <span style="color:rgba(255,255,255,.5);font-size:14px">Employee is live and running</span>
+  </div>
+</div>
+
+<!-- Progress + Counter -->
+<div id="progress" style="width:16.7%"></div>
+<div id="counter">1 / 6</div>
+
+<script>
+  let current = 1;
+  const total = 6;
+
+  window.goToSlide = function(n) {
+    document.getElementById('s' + current).classList.remove('active');
+    current = n;
+    document.getElementById('s' + current).classList.add('active');
+    document.getElementById('progress').style.width = (current / total * 100) + '%';
+    document.getElementById('counter').textContent = current + ' / ' + total;
+  };
+
+  window.nextSlide = function() {
+    if (current < total) goToSlide(current + 1);
+  };
+
+  window.prevSlide = function() {
+    if (current > 1) goToSlide(current - 1);
+  };
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+    if (e.key === 'ArrowLeft') prevSlide();
+  });
+</script>
+</body>
+</html>
